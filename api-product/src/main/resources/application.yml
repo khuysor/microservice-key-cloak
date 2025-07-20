@@ -1,0 +1,18 @@
+server:
+  port: 8087
+spring:
+  application:
+   name: product
+  datasource:
+    url: jdbc:mysql://localhost:3311/product_db?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+    username: 'admin-product'
+    password: 'admin-product-#@#@912'
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    baseline-version: 0
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

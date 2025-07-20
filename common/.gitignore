@@ -1,0 +1,10 @@
+# Spring Boot / Java / Maven / Gradle
+/target/
+*.log
+*.class
+*.jar
+*.war
+*.iml
+/.idea/
+/.gradle/
+/build/

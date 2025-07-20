@@ -1,0 +1,47 @@
+server:
+  port: 8089
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: keycloak-admin
+
+  datasource:
+    url: jdbc:mysql://localhost:3310/user_db?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+    username: 'admin1234'
+    password: "admin1234"
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+
+
+spring.security:
+  oauth2:
+    resourceserver:
+      jwt:
+        jwk-set-uri: http://localhost:8080/realms/saas-application/protocol/openid-connect/certs
+
+keycloak:
+  server-url: http://localhost:8080
+  realm: saas-application
+  client-id: backend-keycloak
+  #  mac key cloak client secret
+  client-secret: MYpEg36TzBRxAPQHs6AwXrMSBcadR4g9
+##  home desktop key cloak client secret
+#  client-secret: aLER9p032OloDpVwUjNj166MUKDgbUo8
+
+#  client-secret: RlWw7Ixwyr9gxd26ljuALRqr7bqewo0a
+
+
+custom:
+  pageSize: 30
+  clients:
+    - react-client
+    - backend-keycloak

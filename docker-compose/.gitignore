@@ -1,0 +1,27 @@
+# docker
+docker-compose.override.yml
+Dockerfile*
+.dockerignore
+**/Dockerfile*
+**/.dockerignore
+
+# docker volumes - ignore sensitive data but keep structure
+volumes/
+data/**/mysql.sock
+data/**/*.pem
+data/**/*.key
+data/**/*.cnf
+data/**/ib_*
+data/**/binlog.*
+data/**/ibdata*
+data/**/ibtmp*
+data/**/*.ibd
+data/**/auto.cnf
+data/**/#ib_*
+*.pid
+
+# docker-compose logs
+*.log
+
+# docker containers
+*.sock

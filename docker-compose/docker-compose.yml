@@ -1,0 +1,64 @@
+services:
+    keycloak-db:
+      image: mysql:8.0
+      container_name: keycloak-db
+      environment:
+        MYSQL_DATABASE: ${mysql_keycloak_db}
+        MYSQL_ROOT_PASSWORD: ${mysql_keycloak_root_password}
+        MYSQL_USER: ${mysql_keycloak_user}
+        MYSQL_PASSWORD: ${mysql_keycloak_password}
+      ports:
+        - "3309:3306"
+      volumes:
+        - ./data/keycloak:/var/lib/mysql
+      networks:
+        - backend-network
+    keycloak:
+      image: quay.io/keycloak/keycloak:26.0.4
+      container_name: keycloak
+      environment:
+        KC_DB: mysql
+        KC_DB_URL_HOST: keycloak-db
+        KC_DB_URL_PORT: 3306
+        KC_DB_URL_DATABASE: ${mysql_keycloak_db}
+        KC_DB_USERNAME: ${mysql_keycloak_user}
+        KC_DB_PASSWORD: ${mysql_keycloak_password}
+        KEYCLOAK_ADMIN: admin
+        KEYCLOAK_ADMIN_PASSWORD: admin
+      depends_on:
+        - keycloak-db
+      command: start-dev
+      ports:
+        - "8080:8080"
+      networks:
+        - backend-network
+    user-db:
+      image: mysql:8.0
+      container_name: user-db
+      environment:
+        MYSQL_DATABASE: ${mysql_user_db}
+        MYSQL_ROOT_PASSWORD: ${mysql_user_root_password}
+        MYSQL_USER: ${mysql_user_user}
+        MYSQL_PASSWORD: ${mysql_user_password}
+      ports:
+        - "3310:3306"
+      volumes:
+        - ./data/user:/var/lib/mysql
+      networks:
+        - backend-network
+    products:
+      image: mysql:8.0
+      container_name: product-db
+      environment:
+        MYSQL_DATABASE: ${mysql_product_db}
+        MYSQL_ROOT_PASSWORD: $mysql_user_root_password
+        MYSQL_USER: ${mysql_product_user}
+        MYSQL_PASSWORD: ${mysql_product_password}
+      ports:
+        - "3311:3306"
+      volumes:
+        - ./data/product:/var/lib/mysql
+networks:
+  backend-network:
+    name: backend-network
+    driver: bridge
