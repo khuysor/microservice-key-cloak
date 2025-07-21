@@ -136,7 +136,7 @@ public class RoleKeyCloakServiceImpl implements RoleKeyCloakService {
     }
 
     @Override
-    public Set<String> findClientRoleNameByRoleKeyCloakId(String roleId) {
+    public Set<String> findClientRoleNameByRoleName(String roleId) {
         try {
             return keycloak.realm(realm).roles().get(roleId).getRoleComposites().stream().map(RoleRepresentation::getName).collect(Collectors.toSet());
         } catch (Exception e) {
