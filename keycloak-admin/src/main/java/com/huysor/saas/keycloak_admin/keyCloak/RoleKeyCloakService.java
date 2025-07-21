@@ -20,5 +20,5 @@ public interface RoleKeyCloakService {
 
     Set<String> findUserRoleName(String userId);
 
-    Set<String> findClientRoleNameByRoleKeyCloakId(String roleId);
+    Set<String> findClientRoleNameByRoleName(String roleId);
 }

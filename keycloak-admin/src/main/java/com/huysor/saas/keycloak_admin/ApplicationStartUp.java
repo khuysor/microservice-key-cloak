@@ -92,15 +92,14 @@ public class ApplicationStartUp implements CommandLineRunner {
         // Sync Realm Roles as Local Roles
         List<RoleRepresentation> realmRoles = roleKeyCloakService.listAllRealmRole();
         Map<String, Role> roleMap = roleRepository.findAll().stream()
-                .collect(Collectors.toMap(Role::getKeyCloakId, role -> role));
+                .collect(Collectors.toMap(Role::getName, role -> role));
 
         realmRoles.forEach(roleRepresentation -> {
-            Role findExistingRole = roleMap.get(roleRepresentation.getId());
-            Set<String> permissionName = roleKeyCloakService.findClientRoleNameByRoleKeyCloakId(roleRepresentation.getId());
+            Role findExistingRole = roleMap.get(roleRepresentation.getName());
+            Set<String> permissionName = roleKeyCloakService.findClientRoleNameByRoleName(roleRepresentation.getName());
             if (findExistingRole != null) {
                 findExistingRole.setName(roleRepresentation.getName());
                 findExistingRole.setDescription(roleRepresentation.getDescription());
-                findExistingRole.setKeyCloakId(roleRepresentation.getId());
                 findExistingRole.setUpdatedAt(LocalDateTime.now());
                 findExistingRole.setUpdatedBy("Backend-Service");
                 findExistingRole.setPermissions(permissionRepository.findPermissionsByNameIn(permissionName));
