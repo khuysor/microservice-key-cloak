@@ -1,7 +1,7 @@
 package com.huysor.saas.keycloak_admin.entityMapper;
 
 import com.huysor.saas.keycloak_admin.dto.req.MenuReq;
-import com.huysor.saas.keycloak_admin.dto.resp.MenuResp;
+import com.huysor.saas.keycloak_admin.dto.resp.MenuRes;
 import com.huysor.saas.keycloak_admin.entity.Menu;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +16,8 @@ public class MenuMapping {
         menu.setComponent(req.getComponent());
         return menu;
     }
-    public MenuResp toMenuResp(Menu menu) {
-        MenuResp resp = new MenuResp();
+    public MenuRes toMenuResp(Menu menu) {
+        MenuRes resp = new MenuRes();
         resp.setId(menu.getId());
         resp.setPath(menu.getPath());
         resp.setComponent(menu.getComponent());

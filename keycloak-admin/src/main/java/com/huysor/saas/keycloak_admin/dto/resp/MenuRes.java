@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class MenuResp {
+public class MenuRes {
     private Long id;
     private String name;
     private Long parentId;
@@ -16,5 +16,5 @@ public class MenuResp {
     private String icon;
     private Integer sortOrder;
     private Integer languageId;
-    private List<MenuResp> child;
+    private List<MenuRes> child;
 }
