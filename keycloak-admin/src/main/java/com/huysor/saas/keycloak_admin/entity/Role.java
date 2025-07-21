@@ -1,5 +1,6 @@
 package com.huysor.saas.keycloak_admin.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.huysor.saas.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,21 +8,19 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true,exclude = {"users"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @Entity
 @Table(name = "tb_role")
+@ToString(callSuper = true, exclude = {"users"})
 public class Role extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")
     private Long id;
-
-    @Column(name = "key_cloak_id",columnDefinition = "it is id of role in keycloak client realm")
-    private String keyCloakId;
 
     @Column(name = "name")
     private String name;
@@ -31,7 +30,7 @@ public class Role extends BaseEntity {
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER )
     @JoinTable(
             name = "tb_role_permission",
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id"),
@@ -41,5 +40,6 @@ public class Role extends BaseEntity {
             @Index(name = "indx_permission_id", columnList = "permission_id")
     }
     )
+    @JsonIgnore
     private Set<Permissions> permissions;
 }

@@ -21,7 +21,6 @@ public class RoleMapping {
         return Role.builder()
                 .name(roleRepresentation.getName())
                 .description(roleRepresentation.getDescription())
-                .keyCloakId(roleRepresentation.getId())
                 .createdBy("Backend-Service")
                 .createdAt(LocalDateTime.now())
                 .build();
