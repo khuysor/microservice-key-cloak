@@ -1,7 +1,10 @@
 package com.huysor.saas.keycloak_admin.service.impl;
 
 import com.huysor.saas.common.dto.res.ApiRes;
+import com.huysor.saas.common.dto.res.PageRes;
 import com.huysor.saas.keycloak_admin.dto.req.user.RoleReq;
+import com.huysor.saas.keycloak_admin.dto.resp.PermissionRes;
+import com.huysor.saas.keycloak_admin.dto.resp.RoleRes;
 import com.huysor.saas.keycloak_admin.entity.Permissions;
 import com.huysor.saas.keycloak_admin.entity.Role;
 import com.huysor.saas.keycloak_admin.entityMapper.RoleMapping;
@@ -14,13 +17,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,10 +61,30 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public ResponseEntity<ApiRes<?>> listAllRole(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+    public PageRes<List<RoleRes>> listAllRole(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,"createdAt"));
         Page<Role> pages = roleRepository.findAll(pageRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiRes.success(pages));
+        if (pages.isEmpty()) {
+            log.error("No roles found in the database");
+            return new PageRes<>(0, 0L, List.of());
+        }
+        List<RoleRes> roleRes = pages.getContent().stream().map(role -> {
+            List<PermissionRes> permissionRes = role.getPermissions().stream().map(
+                    permission -> new PermissionRes(
+                            permission.getId(),
+                            permission.getName(),
+                            permission.getDescription(),
+                            permission.getClientId()
+                    )
+            ).toList();
+            return new RoleRes(
+                    role.getId(),
+                    role.getName(),
+                    role.getDescription(),
+                    permissionRes
+            );
+        }).toList();
+        return new PageRes<>(pages.getTotalPages(), pages.getTotalElements(), roleRes);
     }
 
     @Override
