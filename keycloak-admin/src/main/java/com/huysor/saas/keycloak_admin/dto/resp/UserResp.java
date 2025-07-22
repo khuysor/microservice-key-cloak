@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -41,9 +40,9 @@ public record UserResp(
         boolean emailVerified,
         @Schema(description = "Roles assigned to the user")
         @JsonProperty("roles")
-        Set<RoleResp> roles,
+        Set<RoleRes> roles,
         @Schema(description = "Menus accessible to the user")
         @JsonProperty("menus")
-        Set<MenuResp> menus
+        Set<MenuRes> menus
 ) {
 }
