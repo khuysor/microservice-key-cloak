@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.huysor.saas.api</groupId>
-	<artifactId>product</artifactId>
+	<artifactId>api-product</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>product</name>
+	<name>api-product</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
