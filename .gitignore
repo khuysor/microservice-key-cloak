@@ -48,3 +48,16 @@ client-secret.txt
 ./docker-compose/data
 ./docker-compose/.env
 .idea
+volumes/
+data/**/mysql.sock
+data/**/*.pem
+data/**/*.key
+data/**/*.cnf
+data/**/ib_*
+data/**/binlog.*
+data/**/ibdata*
+data/**/ibtmp*
+data/**/*.ibd
+data/**/auto.cnf
+data/**/#ib_*
+*.pid
