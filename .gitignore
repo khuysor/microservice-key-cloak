@@ -45,7 +45,7 @@ realm-export.json
 *.pem
 *.key
 client-secret.txt
-./docker-compose/data
+./docker-compose/**
 ./docker-compose/.env
 .idea
 volumes/
