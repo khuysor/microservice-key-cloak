@@ -26,7 +26,13 @@ services:
         KEYCLOAK_ADMIN: admin
         KEYCLOAK_ADMIN_PASSWORD: admin
       depends_on:
-        - keycloak-db
+        keycloak-db:
+          condition: service_healthy
+      healthcheck:
+        test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+        interval: 10s
+        timeout: 5s
+        retries: 5
       command: start-dev
       ports:
         - "8080:8080"
