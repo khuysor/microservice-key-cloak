@@ -32,7 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
-### Keycloak specific ###
+### Keycloak specific ###rm -rf docker-compose/.env docker-compose/datarm -rf docker-compose/.env docker-compose/data
 *.log
 keycloak-*.json
 realm-export.json
