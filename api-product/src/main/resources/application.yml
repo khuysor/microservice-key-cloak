@@ -5,8 +5,8 @@ spring:
    name: product
   datasource:
     url: jdbc:mysql://localhost:3311/product_db?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
-    username: 'admin-product'
-    password: 'admin-product-#@#@912'
+    username: 'admin1234'
+    password: 'admin1234'
   flyway:
     enabled: true
     validate-on-migrate: true
