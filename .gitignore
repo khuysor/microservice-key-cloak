@@ -959,3 +959,8 @@ data/**/#ib_*
 /docker-compose/dev/data/keycloak/performance_schema/variables_info_186.sdi
 /docker-compose/dev/data/product/performance_schema/variables_info_186.sdi
 /docker-compose/dev/data/user/performance_schema/variables_info_186.sdi
+/docker-compose/dev/data/product/product_db/flyway_schema_history.ibd
+/docker-compose/dev/data/product/product_db/tb_category.ibd
+/docker-compose/dev/data/product/product_db/tb_category_lang.ibd
+/docker-compose/dev/data/product/product_db/tb_product_lang.ibd
+/docker-compose/dev/data/product/product_db/tb_products.ibd
