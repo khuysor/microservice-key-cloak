@@ -9,6 +9,11 @@ services:
         MYSQL_PASSWORD: ${mysql_keycloak_password}
       ports:
         - "3309:3306"
+      healthcheck:
+        test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${mysql_keycloak_root_password}" ]
+        interval: 5s
+        timeout: 5s
+        retries: 5
       volumes:
         - ./data/keycloak:/var/lib/mysql
       networks:
@@ -29,8 +34,8 @@ services:
         keycloak-db:
           condition: service_healthy
       healthcheck:
-        test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-        interval: 10s
+        test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${mysql_keycloak_root_password}" ]
+        interval: 5s
         timeout: 5s
         retries: 5
       command: start-dev
@@ -64,6 +69,19 @@ services:
         - "3311:3306"
       volumes:
         - ./data/product:/var/lib/mysql
+    grafana:
+      image: grafana/grafana-enterprise
+      container_name: grafana
+      restart: unless-stopped
+      ports:
+        - '3000:3000'
+      volumes:
+        - ./data/grafana:/var/lib/grafana
+      networks:
+        - backend-network
+      environment:
+        GF_SECURITY_ADMIN_USER: admin
+        GF_SECURITY_ADMIN_PASSWORD: admin
 networks:
   backend-network:
     name: backend-network
