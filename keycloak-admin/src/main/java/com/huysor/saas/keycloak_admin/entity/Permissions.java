@@ -4,6 +4,7 @@ import com.huysor.saas.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Comment;
 
 import java.util.Set;
 
@@ -20,8 +21,8 @@ public class Permissions extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "permission_id")
     private Long id;
-
-    @Column(name = "client_id", columnDefinition = "it is id of role client in keycloak  ")
+    @Comment("it is id of role client in keycloak")
+    @Column(name = "client_id")
     private String clientId;
 
     @Column(name = "name")

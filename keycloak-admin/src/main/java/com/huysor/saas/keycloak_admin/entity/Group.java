@@ -4,6 +4,8 @@ import com.huysor.saas.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Comment;
+
 
 import java.util.Set;
 
@@ -20,8 +22,8 @@ public class Group extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "group_id")
     private Long id;
-
-    @Column(name = "key_cloak_id", unique = true, columnDefinition = "is it id of group from keycloak")
+    @Comment("ID of group from Keycloak")
+    @Column(name = "key_cloak_id", unique = true)
     private String keyCloakId;
 
     @Column(name = "name")
