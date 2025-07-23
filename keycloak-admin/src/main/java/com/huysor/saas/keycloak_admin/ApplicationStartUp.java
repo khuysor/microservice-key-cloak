@@ -20,6 +20,7 @@ import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -46,9 +47,12 @@ public class ApplicationStartUp implements CommandLineRunner {
     private final RoleMapping roleMapping;
     private final GroupKeyCloakService groupKeyCloakService;
 
-
     @Override
     public void run(String... args) throws Exception {
+        syncData();
+    }
+    @Scheduled(fixedRate = 6000)
+    void syncData(){
         List<GroupRepresentation> groups = groupKeyCloakService.listAllGroups();
         List<Group> localGroups = groupRepository.findAll();
         Map<String, Group> groupMap = localGroups.stream()
