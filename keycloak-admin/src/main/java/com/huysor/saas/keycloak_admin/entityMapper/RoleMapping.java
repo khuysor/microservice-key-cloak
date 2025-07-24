@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 public class RoleMapping {
     public RoleRepresentation toRoleRepresentation(RoleReq req) {
         RoleRepresentation roleRepresentation = new RoleRepresentation();
-        roleRepresentation.setName(req.getName());
-        roleRepresentation.setDescription(req.getRoleDescription());
+        roleRepresentation.setName(req.name());
+        roleRepresentation.setDescription(req.roleDescription());
         roleRepresentation.setComposite(true);
         return roleRepresentation;
     }
@@ -25,5 +25,9 @@ public class RoleMapping {
                 .createdAt(LocalDateTime.now())
                 .build();
     }
+    public Role toRole(RoleReq req){
+        return Role.builder().name(req.name()).description(req.roleDescription()).build();
+    }
+
 
 }

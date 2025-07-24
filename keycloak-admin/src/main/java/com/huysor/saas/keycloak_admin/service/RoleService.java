@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface RoleService {
-    ResponseEntity<ApiRes<String>> createRole(RoleReq req);
+    ResponseEntity<ApiRes<String>> saveOrUpdate(RoleReq req);
 
     PageRes<List<RoleRes>> listAllRole(int page, int size);
 

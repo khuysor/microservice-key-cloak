@@ -1,6 +1,8 @@
 package com.huysor.saas.keycloak_admin.keyCloak;
 
 import com.huysor.saas.keycloak_admin.dto.req.user.RoleReq;
+import com.huysor.saas.keycloak_admin.entity.Permissions;
+import com.huysor.saas.keycloak_admin.entity.Role;
 import org.keycloak.representations.idm.RoleRepresentation;
 
 import java.util.List;
@@ -14,9 +16,7 @@ public interface RoleKeyCloakService {
 
     Optional<RoleRepresentation> findRoleByName(String roleName);
 
-    RoleRepresentation createKeyCloakRole(RoleReq req);
-
-    Boolean assignRolePermission(RoleReq req);
+    void saverOrUpdateRole(RoleReq req, Set<Permissions> permissions);
 
     Set<String> findUserRoleName(String userId);
 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/role")
 public class RoleController {
     @Value("${custom.pageSize}")
     private int pageSize;
@@ -46,8 +48,8 @@ public class RoleController {
         return roleService.assignRole(req);
     }
 
-    @PostMapping("/createRole")
+    @PostMapping("/saveOrUpdate")
     public ResponseEntity<ApiRes<String>> createRole(@RequestBody RoleReq req) {
-        return roleService.createRole(req);
+        return roleService.saveOrUpdate(req);
     }
 }

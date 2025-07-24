@@ -12,6 +12,7 @@ import com.huysor.saas.keycloak_admin.keyCloak.RoleKeyCloakService;
 import com.huysor.saas.keycloak_admin.repository.PermissionRepository;
 import com.huysor.saas.keycloak_admin.repository.RoleRepository;
 import com.huysor.saas.keycloak_admin.service.RoleService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -37,25 +38,16 @@ public class RoleServiceImpl implements RoleService {
     private final RoleMapping roleMapping;
 
 
+    @Transactional
     @Override
-    public ResponseEntity<ApiRes<String>> createRole(RoleReq req) {
-        Optional<RoleRepresentation> roleRepresentation = roleKeyCloakService.findRoleByName(req.getName());
-        Optional<Role> localRole = roleRepository.findRoleByName(req.getName());
-        if (roleRepresentation.isPresent() && localRole.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiRes.error("Role already exists"));
-        }
-        if (roleRepresentation.isEmpty()) {
-            roleKeyCloakService.createKeyCloakRole(req);
-        }
-        if (localRole.isEmpty()) {
-            Role role = roleMapping.toRole(roleRepresentation.get());
-            if (!req.getPermissionsId().isEmpty()) {
-                Set<Permissions> permissions = permissionRepository.findAllByIdIn(new HashSet<>(req.getPermissionsId()));
-                role.setPermissions(permissions);
-            }
-            roleRepository.save(role);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(ApiRes.success("Role created successfully"));
+    public ResponseEntity<ApiRes<String>> saveOrUpdate(RoleReq req) {
+        Optional<Role> existingRole = roleRepository.findRoleByName(req.name());
+        Set<Permissions> permissions = permissionRepository.findAllByIdIn(new HashSet<>(req.permissionsId()));
+        Role  role = existingRole.orElseGet(() -> roleMapping.toRole(req));
+        role.setPermissions(permissions);
+        roleRepository.save(role);
+        roleKeyCloakService.saverOrUpdateRole(req,permissions);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiRes.created());
 
     }
 
@@ -88,24 +80,6 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public ResponseEntity<ApiRes<String>> assignRole(RoleReq req) {
-        Optional<Role> localRole = roleRepository.findById(req.getId());
-        if (localRole.isEmpty()) {
-            log.error("Can't find role in db with id {}", req.getId());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiRes.error("Role does not existing"));
-        }
-        Optional<RoleRepresentation> roleRepresentation = roleKeyCloakService.findRoleByName(req.getName());
-        if (roleRepresentation.isEmpty()) {
-            log.error("Can't find role in key cloak with name :{} ", req.getName());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiRes.error("Role does not existing"));
-        }
-        req.setName(roleRepresentation.get().getName());
-        boolean assignKeyCloakRole = roleKeyCloakService.assignRolePermission(req);
-        if (assignKeyCloakRole) {
-            Set<Permissions> permissions = permissionRepository.findAllByIdIn(new HashSet<>(req.getPermissionsId()));
-            localRole.get().setPermissions(permissions);
-            roleRepository.save(localRole.get());
-            return ResponseEntity.ok(ApiRes.created());
-        }
         return ResponseEntity.ok(ApiRes.error("Failed to assign role in Keycloak"));
     }
 }
