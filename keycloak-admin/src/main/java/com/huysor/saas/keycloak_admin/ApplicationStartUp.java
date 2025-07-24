@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class ApplicationStartUp implements CommandLineRunner {
+public class ApplicationStartUp {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
@@ -47,11 +46,8 @@ public class ApplicationStartUp implements CommandLineRunner {
     private final RoleMapping roleMapping;
     private final GroupKeyCloakService groupKeyCloakService;
 
-    @Override
-    public void run(String... args) throws Exception {
-        syncData();
-    }
-    @Scheduled(fixedRate = 6000)
+
+    @Scheduled(fixedRate = 60000)
     void syncData(){
         List<GroupRepresentation> groups = groupKeyCloakService.listAllGroups();
         List<Group> localGroups = groupRepository.findAll();
