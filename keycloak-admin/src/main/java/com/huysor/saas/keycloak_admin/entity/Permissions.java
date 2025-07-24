@@ -21,11 +21,11 @@ public class Permissions extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "permission_id")
     private Long id;
-    @Comment("it is id of role client in keycloak")
+    @Comment("it is id of client in keycloak")
     @Column(name = "client_id")
     private String clientId;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Column(name = "description")
