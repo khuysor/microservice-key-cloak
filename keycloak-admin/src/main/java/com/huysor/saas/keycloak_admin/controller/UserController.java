@@ -24,8 +24,8 @@ public class UserController {
     private int pageSize;
 
     @PreAuthorize("hasAuthority('ROLE_create:user') && hasAuthority('ROLE_update:user')")
-    @PostMapping("/create")
-    public ResponseEntity<ApiRes<String>> createUser(@RequestBody UserReq request) {
+    @PostMapping("/saveOrUpdate")
+    public ResponseEntity<ApiRes<String>> saveOrUpdate(@RequestBody UserReq request) {
         return userService.saveOrUpdateUser(request);
     }
 
