@@ -6,7 +6,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 
-
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true, exclude = {"users"})
