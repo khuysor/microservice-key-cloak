@@ -1,6 +1,6 @@
 package com.huysor.saas.keycloak_admin.dto.resp;
 
-import com.huysor.saas.keycloak_admin.dto.common.MenuLanguageResp;
+import com.huysor.saas.common.dto.res.LanguageRes;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +15,6 @@ public class MenuDetailResp {
     private String component;
     private Long parentId;
     private Integer sortOrder;
-    private List<MenuLanguageResp> language;
+    private List<LanguageRes> language;
     private List<MenuDetailResp> child;
 }
