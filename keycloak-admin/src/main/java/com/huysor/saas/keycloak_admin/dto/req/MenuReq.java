@@ -1,6 +1,6 @@
 package com.huysor.saas.keycloak_admin.dto.req;
 
-import com.huysor.saas.keycloak_admin.dto.common.MenuLanguageResp;
+import com.huysor.saas.common.dto.res.LanguageRes;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,5 +14,5 @@ public class MenuReq {
     private String path;
     private String component;
     private String icon;
-    private List<MenuLanguageResp> language;
+    private List<LanguageRes> language;
 }
