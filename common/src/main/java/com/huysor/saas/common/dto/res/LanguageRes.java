@@ -1,11 +1,11 @@
-package com.huysor.saas.keycloak_admin.dto.common;
+package com.huysor.saas.common.dto.res;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public  class MenuLanguageResp {
+public  class LanguageRes {
     private Integer languageId;
     private String name;
 }
