@@ -2,6 +2,7 @@ package com.huysor.saas.keycloak_admin.service.impl;
 
 import com.huysor.saas.common.dto.res.ApiRes;
 import com.huysor.saas.common.dto.res.PageRes;
+import com.huysor.saas.keycloak_admin.dto.req.user.RoleFilter;
 import com.huysor.saas.keycloak_admin.dto.req.user.RoleReq;
 import com.huysor.saas.keycloak_admin.dto.resp.PermissionRes;
 import com.huysor.saas.keycloak_admin.dto.resp.RoleRes;
@@ -15,10 +16,8 @@ import com.huysor.saas.keycloak_admin.service.RoleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -43,39 +42,37 @@ public class RoleServiceImpl implements RoleService {
     public ResponseEntity<ApiRes<String>> saveOrUpdate(RoleReq req) {
         Optional<Role> existingRole = roleRepository.findRoleByName(req.name());
         Set<Permissions> permissions = permissionRepository.findAllByIdIn(new HashSet<>(req.permissionsId()));
-        Role  role = existingRole.orElseGet(() -> roleMapping.toRole(req));
+        Role role = existingRole.orElseGet(() -> roleMapping.toRole(req));
         role.setPermissions(permissions);
         roleRepository.save(role);
-        roleKeyCloakService.saverOrUpdateRole(req,permissions);
+        roleKeyCloakService.saverOrUpdateRole(req, permissions);
         return ResponseEntity.status(HttpStatus.OK).body(ApiRes.created());
 
     }
 
     @Override
-    public PageRes<List<RoleRes>> listAllRole(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,"createdAt"));
-        Page<Role> pages = roleRepository.findAll(pageRequest);
+    public PageRes<List<RoleRes>> listAllRole(RoleFilter req) {
+        Pageable pageable = req.toPageable();
+        if (req.getName() != null) {
+            Page<Role> pages = roleRepository.findAllByNameContainingIgnoreCase(req.getName(), pageable);
+            List<RoleRes> res = getRoleResponse(pages);
+            return new PageRes<>(pages.getTotalPages(), pages.getTotalElements(), res);
+        }
+        Page<Role> pages = roleRepository.findAll(pageable);
         if (pages.isEmpty()) {
             log.error("No roles found in the database");
             return new PageRes<>(0, 0L, List.of());
         }
-        List<RoleRes> roleRes = pages.getContent().stream().map(role -> {
-            List<PermissionRes> permissionRes = role.getPermissions().stream().map(
-                    permission -> new PermissionRes(
-                            permission.getId(),
-                            permission.getName(),
-                            permission.getDescription(),
-                            permission.getClientId()
-                    )
-            ).toList();
-            return new RoleRes(
-                    role.getId(),
-                    role.getName(),
-                    role.getDescription(),
-                    permissionRes
-            );
+        List<RoleRes> res = getRoleResponse(pages);
+        return new PageRes<>(pages.getTotalPages(), pages.getTotalElements(), res);
+
+    }
+
+    private static List<RoleRes> getRoleResponse(Page<Role> pages) {
+        return pages.getContent().stream().map(role -> {
+            List<PermissionRes> permissionRes = role.getPermissions().stream().map(permission -> new PermissionRes(permission.getId(), permission.getName(), permission.getDescription())).toList();
+            return new RoleRes(role.getId(), role.getName(), role.getDescription(), permissionRes);
         }).toList();
-        return new PageRes<>(pages.getTotalPages(), pages.getTotalElements(), roleRes);
     }
 
     @Override
