@@ -2,7 +2,6 @@ package com.huysor.saas.keycloak_admin.keyCloak;
 
 import com.huysor.saas.keycloak_admin.dto.req.user.RoleReq;
 import com.huysor.saas.keycloak_admin.entity.Permissions;
-import com.huysor.saas.keycloak_admin.entity.Role;
 import org.keycloak.representations.idm.RoleRepresentation;
 
 import java.util.List;
