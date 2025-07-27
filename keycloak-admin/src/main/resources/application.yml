@@ -32,12 +32,7 @@ keycloak:
   server-url: http://localhost:8080
   realm: saas-application
   client-id: backend-keycloak
-  #  mac key cloak client secret
-  client-secret: MYpEg36TzBRxAPQHs6AwXrMSBcadR4g9
-##  home desktop key cloak client secret
-#  client-secret: aLER9p032OloDpVwUjNj166MUKDgbUo8
-
-#  client-secret: RlWw7Ixwyr9gxd26ljuALRqr7bqewo0a
+  client-secret: RQ6XrKzEG5OGlgnJ9Yy4jktWXO5BVauU
 
 
 custom:

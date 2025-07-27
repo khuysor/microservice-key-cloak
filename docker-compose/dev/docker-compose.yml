@@ -34,10 +34,11 @@ services:
         keycloak-db:
           condition: service_healthy
       healthcheck:
-        test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${mysql_keycloak_root_password}" ]
+        test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
         interval: 5s
         timeout: 5s
         retries: 5
+        start_period: 60s
       command: start-dev
       ports:
         - "8080:8080"
@@ -62,13 +63,15 @@ services:
       container_name: product-db
       environment:
         MYSQL_DATABASE: ${mysql_product_db}
-        MYSQL_ROOT_PASSWORD: $mysql_user_root_password
+        MYSQL_ROOT_PASSWORD: ${mysql_user_root_password}
         MYSQL_USER: ${mysql_product_user}
         MYSQL_PASSWORD: ${mysql_product_password}
       ports:
         - "3311:3306"
       volumes:
         - ./data/product:/var/lib/mysql
+      networks:
+        - backend-network
     grafana:
       image: grafana/grafana-enterprise
       container_name: grafana
@@ -77,11 +80,32 @@ services:
         - '3000:3000'
       volumes:
         - ./data/grafana:/var/lib/grafana
+        - ./grafana-provisioning:/etc/grafana/provisioning
       networks:
         - backend-network
       environment:
         GF_SECURITY_ADMIN_USER: admin
         GF_SECURITY_ADMIN_PASSWORD: admin
+      depends_on:
+        prometheus:
+          condition: service_healthy
+    prometheus:
+      image: prom/prometheus
+      container_name: prometheus
+      volumes:
+        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      ports:
+        - "9090:9090"
+      networks:
+        - backend-network
+      healthcheck:
+        test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9090/-/healthy || exit 1"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 30s 
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
 networks:
   backend-network:
     name: backend-network

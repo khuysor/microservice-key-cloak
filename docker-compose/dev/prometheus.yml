@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'api-product'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8087']  # Using docker host for local development
+#      - targets: ['api-product:8087']  # Use the name of your Spring Boot container

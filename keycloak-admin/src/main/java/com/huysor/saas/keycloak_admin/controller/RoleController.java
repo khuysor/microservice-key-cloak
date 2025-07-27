@@ -9,11 +9,9 @@ import com.huysor.saas.keycloak_admin.dto.resp.RoleRes;
 import com.huysor.saas.keycloak_admin.service.PermissionService;
 import com.huysor.saas.keycloak_admin.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,9 +26,10 @@ public class RoleController {
 
 
     @PostMapping("/listAllRole")
-    public ResponseEntity<ApiRes<PageRes<List<RoleRes>>>> listRole(@RequestBody RoleFilter req) {
+    @ResponseStatus(HttpStatus.OK)
+    public ApiRes<PageRes<List<RoleRes>>> listRole(@RequestBody RoleFilter req) {
         PageRes<List<RoleRes>> roleResPage = roleService.listAllRole(req);
-        return ResponseEntity.ok(ApiRes.success(roleResPage));
+        return ApiRes.success(roleResPage);
     }
 
     @PostMapping("/listAllPermission")
