@@ -32,6 +32,7 @@
 
         <!-- Plugin versions -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <loki-log-back.version>2.0.0</loki-log-back.version>
     </properties>
 
     <!-- Define all modules -->
@@ -95,7 +96,11 @@
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc-openapi.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.github.loki4j</groupId>
+                <artifactId>loki-logback-appender</artifactId>
+                <version>${loki-log-back.version}</version>
+            </dependency>
             <!-- Internal modules -->
             <dependency>
                 <groupId>com.huysor.saas</groupId>

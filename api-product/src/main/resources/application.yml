@@ -2,7 +2,7 @@ server:
   port: 8087
 spring:
   application:
-    name: product
+    name: product-service
   datasource:
     url: jdbc:mysql://localhost:3311/product_db?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
     username: 'admin1234'
@@ -20,6 +20,9 @@ management:
   endpoint:
     health:
       show-details: always
+  observations:
+    key-values:
+      application: ${spring.application.name}
   metrics:
     tags:
       application: ${spring.application.name}
@@ -32,3 +35,11 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  file:
+    name: shared-logs/${spring.application.name}.log
+  level:
+    root: INFO
+  pattern:
+    correlation: '[${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
