@@ -38,7 +38,6 @@ ruler:
 
 
 limits_config:
-  structured_metadata: true
   reject_old_samples: true
   reject_old_samples_max_age: 168h
 
