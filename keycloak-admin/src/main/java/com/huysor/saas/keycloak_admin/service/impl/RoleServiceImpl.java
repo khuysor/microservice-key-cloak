@@ -39,14 +39,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional
     @Override
-    public ResponseEntity<ApiRes<String>> saveOrUpdate(RoleReq req) {
+    public ApiRes<String> saveOrUpdate(RoleReq req) {
         Optional<Role> existingRole = roleRepository.findRoleByName(req.name());
-        Set<Permissions> permissions = permissionRepository.findAllByIdIn(new HashSet<>(req.permissionsId()));
+        Set<Permissions> permissions = permissionRepository.findAllByIdIn(req.permissionsId());
         Role role = existingRole.orElseGet(() -> roleMapping.toRole(req));
         role.setPermissions(permissions);
         roleRepository.save(role);
         roleKeyCloakService.saverOrUpdateRole(req, permissions);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiRes.created());
+        return ApiRes.created();
 
     }
 
@@ -76,7 +76,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public ResponseEntity<ApiRes<String>> assignRole(RoleReq req) {
-        return ResponseEntity.ok(ApiRes.error("Failed to assign role in Keycloak"));
+    public ApiRes<String> assignRole(RoleReq req) {
+        return ApiRes.error("Failed to assign role in Keycloak");
     }
 }

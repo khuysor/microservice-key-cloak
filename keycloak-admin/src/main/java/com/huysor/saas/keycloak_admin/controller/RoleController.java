@@ -5,12 +5,12 @@ import com.huysor.saas.common.dto.res.PageRes;
 import com.huysor.saas.keycloak_admin.dto.req.user.PermissionFilter;
 import com.huysor.saas.keycloak_admin.dto.req.user.RoleFilter;
 import com.huysor.saas.keycloak_admin.dto.req.user.RoleReq;
+import com.huysor.saas.keycloak_admin.dto.resp.PermissionRes;
 import com.huysor.saas.keycloak_admin.dto.resp.RoleRes;
 import com.huysor.saas.keycloak_admin.service.PermissionService;
 import com.huysor.saas.keycloak_admin.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,17 +33,20 @@ public class RoleController {
     }
 
     @PostMapping("/listAllPermission")
-    public ResponseEntity<ApiRes<?>> listClientRole(@RequestBody PermissionFilter req) {
-        return ResponseEntity.ok(permissionService.listAllPermission(req));
+    @ResponseStatus(HttpStatus.OK)
+    public ApiRes<PageRes<List<PermissionRes>>>  listPermission(@RequestBody PermissionFilter req) {
+        return permissionService.listAllPermission(req);
     }
 
     @PostMapping("/assignPermissionRole")
-    public ResponseEntity<ApiRes<String>> assignPermissionRole(@RequestBody RoleReq req) {
+    @ResponseStatus(HttpStatus.OK)
+    public ApiRes<String> assignPermissionRole(@RequestBody RoleReq req) {
         return roleService.assignRole(req);
     }
 
     @PostMapping("/saveOrUpdate")
-    public ResponseEntity<ApiRes<String>> createRole(@RequestBody RoleReq req) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiRes<String> createRole(@RequestBody RoleReq req) {
         return roleService.saveOrUpdate(req);
     }
 }
