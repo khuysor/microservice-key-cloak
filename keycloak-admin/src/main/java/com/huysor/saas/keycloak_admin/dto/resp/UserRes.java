@@ -2,14 +2,16 @@ package com.huysor.saas.keycloak_admin.dto.resp;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.huysor.saas.keycloak_admin.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record UserResp(
+public record UserRes(
         @Schema(description = "User ID")
         @JsonProperty("id")
         Long id,
@@ -45,4 +47,20 @@ public record UserResp(
         @JsonProperty("menus")
         Set<MenuRes> menus
 ) {
+    public static UserRes toUserRes(User user) {
+        return new UserRes(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getCreatedAt(),
+                user.getUpdatedAt(),
+                user.isEnabled(),
+                user.isEmailVerified(),
+                user.getRoles().stream().map(RoleRes::toRes).collect(Collectors.toSet()),
+                Set.of()
+                );
+
+    }
 }

@@ -1,19 +1,21 @@
 package com.huysor.saas.keycloak_admin.controller;
 
 import com.huysor.saas.common.dto.res.ApiRes;
+import com.huysor.saas.common.dto.res.PageRes;
+import com.huysor.saas.keycloak_admin.dto.req.user.UserDelReq;
+import com.huysor.saas.keycloak_admin.dto.req.user.UserFilter;
 import com.huysor.saas.keycloak_admin.dto.req.user.UserReq;
 import com.huysor.saas.keycloak_admin.dto.req.user.UserRoleReq;
-import com.huysor.saas.keycloak_admin.dto.resp.UserResp;
+import com.huysor.saas.keycloak_admin.dto.resp.UserRes;
 import com.huysor.saas.keycloak_admin.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -25,29 +27,33 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ROLE_create:user') && hasAuthority('ROLE_update:user')")
     @PostMapping("/saveOrUpdate")
-    public ResponseEntity<ApiRes<String>> saveOrUpdate(@RequestBody UserReq request) {
+    public ApiRes<String> saveOrUpdate(@RequestBody UserReq request) {
         return userService.saveOrUpdateUser(request);
     }
 
     @PreAuthorize("hasAuthority('ROLE_view:user')")
-    @PostMapping("/allUsers")
-    public ResponseEntity<ApiRes<Page<UserResp>>> list(@RequestBody Map<String, Object> req) {
-        int page = (Integer) req.getOrDefault("page", 0);
-        int size = (Integer) req.getOrDefault("size", pageSize);
-        int offset = page > 0 ? (page - 1) * size : 0;
-        return userService.getAllUsers(offset, size);
+    @PostMapping("/listAllUsers")
+    public ApiRes<PageRes<List<UserRes>>> list(@RequestBody UserFilter filter) {
+        var userRes = userService.getAllUsers(filter);
+        return ApiRes.success(userRes);
     }
 
     @PreAuthorize("hasAuthority('ROLE_view:user')")
     @PostMapping("{id}/detail")
-    public ResponseEntity<ApiRes<UserResp>> getUserById(@PathVariable("id") Long id, HttpServletRequest request) {
-        int language_id = request.getHeader("language_id") != null ? Integer.parseInt(request.getHeader("language_id")) : 1;
+    public ApiRes<UserRes> getUserById(@PathVariable("id") Long id, @RequestHeader("language_id") Integer language_id) {
         return userService.getUserDetailById(id, language_id);
     }
 
     @PreAuthorize("hasAuthority('ROLE_create:user') && hasAuthority('ROLE_update:user')")
-    public ResponseEntity <ApiRes<String>> assignUseRole(@PathVariable("id") Long id, @RequestBody UserRoleReq request) {
+    public ApiRes<String> assignUseRole(@PathVariable("id") Long id, @RequestBody UserRoleReq request) {
         return userService.assignUserRole(request);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_delete:user)")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @DeleteMapping("/delete")
+    public ApiRes<String> deleteUser(@RequestBody @Valid UserDelReq req) {
+        return userService.deleteUser(req);
     }
 
 

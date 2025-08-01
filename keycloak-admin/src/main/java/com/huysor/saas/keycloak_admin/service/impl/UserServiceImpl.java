@@ -1,9 +1,12 @@
 package com.huysor.saas.keycloak_admin.service.impl;
 
 import com.huysor.saas.common.dto.res.ApiRes;
+import com.huysor.saas.common.dto.res.PageRes;
+import com.huysor.saas.keycloak_admin.dto.req.user.UserDelReq;
+import com.huysor.saas.keycloak_admin.dto.req.user.UserFilter;
 import com.huysor.saas.keycloak_admin.dto.req.user.UserReq;
 import com.huysor.saas.keycloak_admin.dto.req.user.UserRoleReq;
-import com.huysor.saas.keycloak_admin.dto.resp.UserResp;
+import com.huysor.saas.keycloak_admin.dto.resp.UserRes;
 import com.huysor.saas.keycloak_admin.entity.Group;
 import com.huysor.saas.keycloak_admin.entity.Role;
 import com.huysor.saas.keycloak_admin.entity.User;
@@ -14,18 +17,19 @@ import com.huysor.saas.keycloak_admin.keyCloak.UserKeyCloakService;
 import com.huysor.saas.keycloak_admin.repository.GroupRepository;
 import com.huysor.saas.keycloak_admin.repository.RoleRepository;
 import com.huysor.saas.keycloak_admin.repository.UserRepository;
+import com.huysor.saas.keycloak_admin.repository.specifiction.UserSpecification;
 import com.huysor.saas.keycloak_admin.service.UserService;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,30 +50,21 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseEntity<ApiRes<Page<UserResp>>> getAllUsers(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<User> userPage = userRepository.findAll(pageRequest);
-        if (userPage.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiRes.error("No users found"));
+    @ResponseStatus(HttpStatus.OK)
+    public PageRes<List<UserRes>> getAllUsers(UserFilter filter) {
+        Pageable pageable = filter.toPageable();
+        Page<User> userPage = userRepository.findAll(UserSpecification.filterUser(filter), pageable);
+        if (userPage.getContent().isEmpty()) {
+            return new PageRes<>(0,0L,List.of());
         }
-        Page<UserResp> userRespPage = userPage.map(userMapping::toUserResp);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiRes.success(userRespPage));
+        List<UserRes> users = userPage.getContent().stream().map(UserRes::toUserRes).toList();
+        return new PageRes<>(userPage.getTotalPages(), userPage.getTotalElements(), users);
     }
 
     @Transactional
-    public ResponseEntity<ApiRes<String>> saveOrUpdateUser(UserReq request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiRes<String> saveOrUpdateUser(UserReq request) {
         UserRepresentation userRepresentation = userMapping.toUserRepresentation(request);
-        Set<Role> roles = roleRepository.findRoleByIdIn(request.roleIds());
-        Set<Group> groups = groupRepository.findGroupByIdIn(request.groupIds());
-        List<String> roleName = roles.stream().map(Role::getName).toList();
-        List<String> groupName = groups.stream().map(Group::getName).toList();
-        userRepresentation.setRealmRoles(roleName);
-        userRepresentation.setGroups(groupName);
-        boolean isSaveSuccess = userKeyCloakService.saveOrUpdateUserKeyCloak(userRepresentation);
-        if (!isSaveSuccess) {
-            log.error("Failed to save or update user in Keycloak");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiRes.error("Failed to save or update user"));
-        }
         Optional<User> userExisting = userRepository.findByUsername(request.username());
         User user;
         if (userExisting.isPresent()) {
@@ -78,25 +73,44 @@ public class UserServiceImpl implements UserService {
         } else {
             user = userMapping.toUser(request);
         }
-        user.setGroups(groups);
-        user.setRoles(roles);
+        if (request.roleIds() != null && !request.roleIds().isEmpty()) {
+            Set<Role> roles = roleRepository.findRoleByIdIn(request.roleIds());
+            List<String> roleName = roles.stream().map(Role::getName).toList();
+            userRepresentation.setRealmRoles(roleName);
+            user.setRoles(roles);
+        }
+        if (request.groupIds() != null && !request.groupIds().isEmpty()) {
+            Set<Group> groups = groupRepository.findGroupByIdIn(request.groupIds());
+            List<String> groupName = groups.stream().map(Group::getName).toList();
+            userRepresentation.setGroups(groupName);
+            user.setGroups(groups);
+        }
+        userKeyCloakService.saveOrUpdateUserKeyCloak(userRepresentation);
         userRepository.save(user);
-        return ResponseEntity.status(201).body(ApiRes.success("Successfully created"));
-
+        return ApiRes.success("Successfully created");
     }
 
 
     @Override
-    public ResponseEntity<ApiRes<UserResp>> getUserDetailById(Long id, Integer languageId) {
+    public ApiRes<UserRes> getUserDetailById(Long id, Integer languageId) {
         User user = userRepository.findById(id).orElseThrow(() -> {
             log.error("User not found with id: {}", id);
             return new NotFoundException("User not found");
         });
-        return ResponseEntity.status(HttpStatus.OK).body(ApiRes.success(userMapping.toUserResp(user)));
+        return ApiRes.success(userMapping.toUserResp(user));
     }
 
     @Override
-    public ResponseEntity<ApiRes<String>> assignUserRole(UserRoleReq userRoleReq) {
-        return ResponseEntity.status(HttpStatus.OK).body(ApiRes.success("Successfully assigned role to user"));
+    public ApiRes<String> assignUserRole(UserRoleReq userRoleReq) {
+        return ApiRes.success("Successfully assigned role to user");
+    }
+
+    @Override
+    public ApiRes<String> deleteUser(UserDelReq req) {
+        User user = userRepository.findById(req.userId())
+                .orElseThrow(() -> new BadRequestException("Can't delete user"));
+        userKeyCloakService.deleteUser(user);
+        userRepository.delete(user);
+        return null;
     }
 }

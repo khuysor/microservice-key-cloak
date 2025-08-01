@@ -1,5 +1,6 @@
 package com.huysor.saas.keycloak_admin.keyCloak;
 
+import com.huysor.saas.keycloak_admin.entity.User;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
 
@@ -10,9 +11,9 @@ public interface UserKeyCloakService {
 
     UsersResource getUserResource();
 
-    Boolean saveOrUpdateUserKeyCloak(UserRepresentation userRepresentation);
+    void saveOrUpdateUserKeyCloak(UserRepresentation userRepresentation);
 
-    Boolean deleteUser(String userId);
+    void deleteUser(User user);
 
     void sendEmail(String userId);
 

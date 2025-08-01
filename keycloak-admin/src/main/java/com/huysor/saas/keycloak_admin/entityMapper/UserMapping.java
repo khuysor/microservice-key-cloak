@@ -1,7 +1,7 @@
 package com.huysor.saas.keycloak_admin.entityMapper;
 
 import com.huysor.saas.keycloak_admin.dto.req.user.UserReq;
-import com.huysor.saas.keycloak_admin.dto.resp.UserResp;
+import com.huysor.saas.keycloak_admin.dto.resp.UserRes;
 import com.huysor.saas.keycloak_admin.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -29,8 +29,8 @@ public class UserMapping {
         return user;
     }
 
-    public UserResp toUserResp(User user) {
-        return new UserResp(
+    public UserRes toUserResp(User user) {
+        return new UserRes(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
