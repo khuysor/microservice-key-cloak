@@ -18,7 +18,7 @@
 
         <!-- Compatible Spring versions -->
         <spring-boot.version>3.3.4</spring-boot.version>
-        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
 
         <!-- Database versions -->
         <mysql.version>8.0.33</mysql.version>
@@ -40,6 +40,8 @@
         <module>common</module>
         <module>api-product</module>
         <module>keycloak-admin</module>
+        <module>gateway</module>
+        <module>eureka-server</module>
     </modules>
 
     <!-- Version management only -->
@@ -62,6 +64,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
 
             <!-- Database Dependencies -->
             <dependency>
@@ -89,7 +92,6 @@
                 <artifactId>flyway-mysql</artifactId>
                 <version>${flyway.version}</version>
             </dependency>
-
             <!-- Documentation -->
             <dependency>
                 <groupId>org.springdoc</groupId>
@@ -117,6 +119,14 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
         <!-- Testing - useful for all modules -->
