@@ -131,6 +131,12 @@ services:
       environment:
         GF_SECURITY_ADMIN_USER: admin
         GF_SECURITY_ADMIN_PASSWORD: admin
+        GF_SMTP_ENABLED: true
+        GF_SMTP_HOST: smtp.gmail.com:587
+        GF_SMTP_USER: ${smtp_user}
+        GF_SMTP_PASSWORD: ${smtp_password}
+        GF_SMTP_FROM_ADDRESS: 'noreplay@gmail.com'
+        GF_SMTP_FROM_NAME: Grafana
       depends_on:
         prometheus:
           condition: service_healthy
