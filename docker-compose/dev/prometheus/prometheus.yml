@@ -6,5 +6,11 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
     static_configs:
-      - targets: ['host.docker.internal:8087']  # Using docker host for local development
-#      - targets: ['api-product:8087']  # Use the name of your Spring Boot container
+      - targets: [ 'host.docker.internal:8087' ]  # Using docker host for local development
+  #      - targets: ['api-product:8087']  # Use the name of your Spring Boot container
+
+  - job_name: 'keycloak-admin'
+    metrics_path: '/api/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'host.docker.internal:8089' ]  # Using docker host for local development

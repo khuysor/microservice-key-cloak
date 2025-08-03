@@ -8,9 +8,15 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: spring-services
+  - job_name: api-product
     static_configs:
-      - targets: ['localhost']
+      - targets: [ 'localhost' ]
         labels:
-          job: spring-services
-          __path__: /shared-logs/*.log
+          job: api-product
+          __path__: /shared-logs/product-service.log
+  - job_name: keycloak-admin
+    static_configs:
+      - targets: [ 'localhost' ]
+        labels:
+          job: "keycloak-admin"
+          __path__: /shared-logs/keycloak-admin.log
