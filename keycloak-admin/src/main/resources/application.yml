@@ -1,10 +1,8 @@
 server:
   port: 8089
-  servlet:
-    context-path: /api
 spring:
   application:
-    name: keycloak-admin
+    name: api-keycloak-admin
 
   datasource:
     url: jdbc:mysql://localhost:3310/user_db?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
@@ -19,8 +17,30 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [ "prometheus","health", "info" ]
+  endpoint:
+    health:
+      show-details: always
+  observations:
+    key-values:
+      application: ${spring.application.name}
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      service: api-product
+      environment: dev
 
-
+logging:
+  file:
+    name: ../shared-logs/${spring.application.name}.log
+  level:
+    root: INFO
+  pattern:
+    correlation: '[${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
 
 spring.security:
   oauth2:
@@ -40,3 +60,7 @@ custom:
   clients:
     - react-client
     - backend-keycloak
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
