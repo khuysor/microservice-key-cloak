@@ -2,7 +2,7 @@ server:
   port: 8087
 spring:
   application:
-    name: product-service
+    name: api-product
   datasource:
     url: jdbc:mysql://localhost:3311/product_db?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
     username: 'admin1234'
@@ -38,8 +38,13 @@ mybatis:
 
 logging:
   file:
-    name: shared-logs/${spring.application.name}.log
+    name: ../shared-logs/${spring.application.name}.log
   level:
     root: INFO
   pattern:
     correlation: '[${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
