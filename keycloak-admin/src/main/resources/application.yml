@@ -46,13 +46,13 @@ spring.security:
   oauth2:
     resourceserver:
       jwt:
-        jwk-set-uri: http://localhost:8080/realms/saas-application/protocol/openid-connect/certs
+        jwk-set-uri: http://localhost:8070/realms/saas-application/protocol/openid-connect/certs
 
 keycloak:
-  server-url: http://localhost:8080
+  server-url: http://localhost:8070
   realm: saas-application
   client-id: backend-keycloak
-  client-secret: RQ6XrKzEG5OGlgnJ9Yy4jktWXO5BVauU
+  client-secret: wH7GjL0mUixcADGP8LWSVL4UtV9Q6Qin
 
 
 custom:

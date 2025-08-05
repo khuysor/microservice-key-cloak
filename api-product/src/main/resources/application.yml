@@ -7,11 +7,30 @@ spring:
     url: jdbc:mysql://localhost:3311/product_db?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
     username: 'admin1234'
     password: 'admin1234'
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${keycloak.url}/protocol/openid-connect/certs
+      client:
+        registration:
+          api-product:
+            client-id: ${keycloak.client-id}
+            client-secret: ${keycloak.client-secret}
+            authorization-grant-type: ${keycloak.grant-type}
+            scope: openid
+            provider: product-provider
+        provider:
+          product-provider:
+            issuer-uri: ${keycloak.url}
+
   flyway:
     enabled: true
     validate-on-migrate: true
     baseline-on-migrate: true
     baseline-version: 0
+
 management:
   endpoints:
     web:
@@ -29,7 +48,11 @@ management:
       service: api-product
       environment: dev
 
-
+keycloak:
+  url: http://localhost:8070/realms/saas-application
+  client-id: api-product
+  client-secret: n1WlV7iSnNqReLqoQkGRDXDvaGeu26nk
+  grant-type: client_credentials
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
