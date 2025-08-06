@@ -1,0 +1,49 @@
+services:
+  keycloak-db:
+    image: mysql:8.0
+    container_name: keycloak-db
+    environment:
+      MYSQL_DATABASE: ${mysql_keycloak_db}
+      MYSQL_ROOT_PASSWORD: ${mysql_keycloak_root_password}
+      MYSQL_USER: ${mysql_keycloak_user}
+      MYSQL_PASSWORD: ${mysql_keycloak_password}
+    ports:
+      - "${mysql_keycloak_port}"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${mysql_keycloak_root_password}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./data/keycloak:/var/lib/mysql
+    networks:
+      - backend-network
+  user-db:
+    image: mysql:8.0
+    container_name: user-db
+    environment:
+      MYSQL_DATABASE: ${mysql_user_db}
+      MYSQL_ROOT_PASSWORD: ${mysql_user_root_password}
+      MYSQL_USER: ${mysql_user_user}
+      MYSQL_PASSWORD: ${mysql_user_password}
+    ports:
+      - "${mysql_user_port}"
+    volumes:
+      - ./data/user:/var/lib/mysql
+    networks:
+      - backend-network
+
+  products:
+    image: mysql:8.0
+    container_name: product-db
+    environment:
+      MYSQL_DATABASE: ${mysql_product_db}
+      MYSQL_ROOT_PASSWORD: ${mysql_user_root_password}
+      MYSQL_USER: ${mysql_product_user}
+      MYSQL_PASSWORD: ${mysql_product_password}
+    ports:
+      - "3311:3306"
+    volumes:
+      - ./data/product:/var/lib/mysql
+    networks:
+      - backend-network

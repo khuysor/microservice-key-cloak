@@ -1,147 +1,32 @@
 services:
-    keycloak-db:
-      image: mysql:8.0
-      container_name: keycloak-db
-      environment:
-        MYSQL_DATABASE: ${mysql_keycloak_db}
-        MYSQL_ROOT_PASSWORD: ${mysql_keycloak_root_password}
-        MYSQL_USER: ${mysql_keycloak_user}
-        MYSQL_PASSWORD: ${mysql_keycloak_password}
-      ports:
-        - "3309:3306"
-      healthcheck:
-        test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${mysql_keycloak_root_password}" ]
-        interval: 5s
-        timeout: 5s
-        retries: 5
-      volumes:
-        - ./data/keycloak:/var/lib/mysql
-      networks:
-        - backend-network
-    keycloak:
-      image: quay.io/keycloak/keycloak:26.0.4
-      container_name: keycloak
-      environment:
-        KC_DB: mysql
-        KC_DB_URL_HOST: keycloak-db
-        KC_DB_URL_PORT: 3306
-        KC_DB_URL_DATABASE: ${mysql_keycloak_db}
-        KC_DB_USERNAME: ${mysql_keycloak_user}
-        KC_DB_PASSWORD: ${mysql_keycloak_password}
-        KEYCLOAK_ADMIN: admin
-        KEYCLOAK_ADMIN_PASSWORD: admin
-      depends_on:
-        keycloak-db:
-          condition: service_healthy
-      healthcheck:
-        test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
-        interval: 5s
-        timeout: 5s
-        retries: 5
-        start_period: 60s
-      command: start-dev
-      ports:
-        - "8080:8080"
-      networks:
-        - backend-network
-    user-db:
-      image: mysql:8.0
-      container_name: user-db
-      environment:
-        MYSQL_DATABASE: ${mysql_user_db}
-        MYSQL_ROOT_PASSWORD: ${mysql_user_root_password}
-        MYSQL_USER: ${mysql_user_user}
-        MYSQL_PASSWORD: ${mysql_user_password}
-      ports:
-        - "3310:3306"
-      volumes:
-        - ./data/user:/var/lib/mysql
-      networks:
-        - backend-network
-    products:
-      image: mysql:8.0
-      container_name: product-db
-      environment:
-        MYSQL_DATABASE: ${mysql_product_db}
-        MYSQL_ROOT_PASSWORD: ${mysql_user_root_password}
-        MYSQL_USER: ${mysql_product_user}
-        MYSQL_PASSWORD: ${mysql_product_password}
-      ports:
-        - "3311:3306"
-      volumes:
-        - ./data/product:/var/lib/mysql
-      networks:
-        - backend-network
-    prometheus:
-      image: prom/prometheus
-      container_name: prometheus
-      volumes:
-        - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      ports:
-        - "9090:9090"
-      networks:
-        - backend-network
-      healthcheck:
-        test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9090/-/healthy || exit 1"]
-        interval: 30s
-        timeout: 10s
-        retries: 3
-        start_period: 30s 
-      extra_hosts:
-        - "host.docker.internal:host-gateway"
-    loki:
-        image: grafana/loki:2.9.0
-        container_name: loki
-        ports:
-            - "3100:3100"
-        volumes:
-            - ./loki/loki-config.yml:/etc/loki/local-config.yml
-        command: "--config.file=/etc/loki/local-config.yml"
-        networks:
-            - backend-network
-        healthcheck:
-            test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1"]
-            interval: 30s
-            timeout: 10s
-            retries: 3
-            start_period: 30s
-    promtail:
-      image: grafana/promtail:2.9.0
-      container_name: promtail
-      volumes:
-        - ./promtail/promtail-config.yml:/etc/promtail/config.yml
-        - ../../logs:/logs
-        - ../../shared-logs:/shared-logs
-      command: "--config.file=/etc/promtail/config.yml"
-      networks:
-        - backend-network
-      depends_on:
-        - loki
-    grafana:
-      image: grafana/grafana-enterprise
-      container_name: grafana
-      restart: unless-stopped
-      ports:
-        - '3000:3000'
-      volumes:
-        - ./data/grafana:/var/lib/grafana
-        - ./grafana-provisioning:/etc/grafana/provisioning
-      networks:
-        - backend-network
-      environment:
-        GF_SECURITY_ADMIN_USER: admin
-        GF_SECURITY_ADMIN_PASSWORD: admin
-        GF_SMTP_ENABLED: true
-        GF_SMTP_HOST: smtp.gmail.com:587
-        GF_SMTP_USER: ${smtp_user}
-        GF_SMTP_PASSWORD: ${smtp_password}
-        GF_SMTP_FROM_ADDRESS: 'noreplay@gmail.com'
-        GF_SMTP_FROM_NAME: Grafana
-      depends_on:
-        prometheus:
-          condition: service_healthy
-        loki:
-          condition: service_healthy
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.4
+    container_name: keycloak
+    environment:
+      KC_DB: mysql
+      KC_DB_URL_HOST: keycloak-db
+      KC_DB_URL_PORT: 3306
+      KC_DB_URL_DATABASE: ${mysql_keycloak_db}
+      KC_DB_USERNAME: ${mysql_keycloak_user}
+      KC_DB_PASSWORD: ${mysql_keycloak_password}
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8070/health/ready || exit 1" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    command: start-dev
+    ports:
+      - "${keycloak_port}"
+    networks:
+      - backend-network
+
+
 networks:
   backend-network:
     name: backend-network
