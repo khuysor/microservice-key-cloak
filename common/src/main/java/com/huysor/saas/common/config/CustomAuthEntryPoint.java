@@ -1,4 +1,4 @@
-package com.huysor.saas.keycloak_admin.config;
+package com.huysor.saas.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
@@ -7,13 +7,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
 public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
     @Resource
     private ObjectMapper objectMapper;

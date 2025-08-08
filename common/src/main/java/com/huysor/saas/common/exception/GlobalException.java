@@ -1,15 +1,14 @@
-package com.huysor.saas.keycloak_admin.exception;
+package com.huysor.saas.common.exception;
 
 import com.huysor.saas.common.dto.res.ApiRes;
+import feign.FeignException;
 import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpResponseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -54,17 +53,12 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiRes.error("Invalid Request Input", null, HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }
 
-    @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<ApiRes<String>> handleUnAuthorization(AuthorizationDeniedException ex) {
+    @ExceptionHandler(FeignException.Unauthorized.class)
+    public ResponseEntity<ApiRes<String>> handleUnAuthorization(FeignException ex) {
         log.error("don't have permission to access this resource: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiRes.error("Your don't have permission to access this resource !!!", null, HttpStatus.FORBIDDEN.value()));
 
     }
 
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ApiRes<String>> handleForbidden(ForbiddenException ex) {
-        log.error("Access forbidden: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiRes.error("You don't have permission to access this resource !!!", null, HttpStatus.FORBIDDEN.value()));
-    }
+
 }
