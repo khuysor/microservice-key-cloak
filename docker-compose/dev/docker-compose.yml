@@ -20,11 +20,13 @@ services:
       timeout: 5s
       retries: 5
       start_period: 60s
-    command: start-dev
+    command: ["start-dev","--import-realm"]
     ports:
       - "${keycloak_port}"
     networks:
       - backend-network
+    volumes:
+    - ../../:/opt/keycloak/data/import
 
 
 networks:
