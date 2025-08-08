@@ -11,7 +11,7 @@ public class GatewayRouteConfig {
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("API-PRODUCT", r -> r.path("/api/v1/backend/inventory/**").filters(f -> f.stripPrefix(4)).uri("lb://API-PRODUCT"))
-                .route("API-KEYCLOAK-ADMIN", r -> r.path("/api/v1/backend/user/**").filters(f -> f.stripPrefix(4)).uri("lb://API-KEYCLOAK-ADMIN"))
+                .route("API-KEYCLOAK-ADMIN", r -> r.path("/api/v1/backend/auth/**").filters(f -> f.stripPrefix(4)).uri("lb://API-KEYCLOAK-ADMIN"))
                 .build();
     }
 }
